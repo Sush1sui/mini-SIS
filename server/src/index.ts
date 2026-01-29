@@ -1,0 +1,66 @@
+import { Hono } from "hono";
+import { serve } from "bun";
+import cors from "cors";
+import authRouter from "./auth";
+import studentsRouter from "./routes/students";
+import coursesRouter from "./routes/courses";
+import subjectsRouter from "./routes/subjects";
+import gradesRouter from "./routes/grades";
+
+const app = new Hono();
+
+// Hono-native CORS handling for development
+app.use("*", async (c, next) => {
+  const origin =
+    typeof c.req.header === "function" ? c.req.header("origin") || "" : "";
+  const allowed = process.env.ALLOWED_ORIGIN || "http://localhost:3000";
+  if (origin && origin === allowed) {
+    c.header("Access-Control-Allow-Origin", origin);
+    c.header("Access-Control-Allow-Credentials", "true");
+    c.header(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, X-Requested-With",
+    );
+    c.header(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    );
+  }
+
+  if (c.req.method === "OPTIONS") {
+    const headers = new Headers();
+    if (origin && origin === allowed) {
+      headers.set("Access-Control-Allow-Origin", origin);
+      headers.set("Access-Control-Allow-Credentials", "true");
+      headers.set(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization, X-Requested-With",
+      );
+      headers.set(
+        "Access-Control-Allow-Methods",
+        "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+      );
+    }
+    return new Response("", { status: 204, headers });
+  }
+
+  return next();
+});
+
+app.get("/", (c) => {
+  return c.text("Mini School SIS - Hono + Bun");
+});
+
+// mount auth routes
+app.route("/auth", authRouter);
+// mount students routes
+app.route("/students", studentsRouter);
+app.route("/courses", coursesRouter);
+app.route("/subjects", subjectsRouter);
+app.route("/grades", gradesRouter);
+
+const port = Number(process.env.PORT) || 4000;
+console.log(`Starting Mini SIS server on port ${port}`);
+serve({ fetch: app.fetch, port });
+
+export default app;
