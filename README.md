@@ -25,7 +25,7 @@ Quick start
 
 ```bash
 cd client
-npm install
+npm install --legacy-peer-deps
 ```
 
 2. Install Bun & server deps
