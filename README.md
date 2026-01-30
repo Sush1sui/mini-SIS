@@ -75,13 +75,20 @@ npm run dev
 
 Environment (minimum)
 
-Create `.env` with:
+Create a `server/.env` with values similar to the example below. Do not surround the `DATABASE_URL` with quotes when setting it in your deployment provider (Render, Vercel, etc.).
 
 ```text
+PORT=4000
 DATABASE_URL=postgres://USER:PASS@HOST:PORT/DBNAME
-NODE_ENV=development
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=adminpass
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
+SESSION_SECRET=<your-session-secret>
+```
+
+Create a `client/.env` with values similar to the example below.
+
+```text
+NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
 Seeds & migrations
