@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { serve } from "bun";
-import cors from "cors";
 import authRouter from "./auth";
 import studentsRouter from "./routes/students";
 import coursesRouter from "./routes/courses";
@@ -60,8 +59,20 @@ app.route("/subjects", subjectsRouter);
 app.route("/grades", gradesRouter);
 
 const port = Number(process.env.PORT) || 4000;
-console.log(`Starting Mini SIS server on port ${port}`);
-serve({ fetch: app.fetch, port });
+const BUN_MANUAL = process.env.BUN_MANUAL === "1";
+
+// When running with `bun <file>` Bun may automatically start a server
+// if the module exports a fetch handler. To avoid attempting to listen
+// twice (and getting EADDRINUSE), skip the manual `serve()` call when
+// Bun is present unless the `BUN_MANUAL=1` env var is set.
+if (typeof Bun !== "undefined" && !BUN_MANUAL) {
+  console.log(
+    `Detected Bun runtime — skipping manual serve (Bun will auto-serve).`,
+  );
+} else {
+  console.log(`Starting Mini SIS server on port ${port}`);
+  serve({ fetch: app.fetch, port });
+}
 
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
 let isPinging = false;

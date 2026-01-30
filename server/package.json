@@ -5,7 +5,8 @@
     "migrate": "bun run ./scripts/run_sql.ts ./db/migrations/001_init.sql",
     "seed": "bun run ./scripts/run_sql.ts ./db/seed.sql && bun run ./scripts/seed_admin.ts",
     "db:setup": "bun run migrate && bun run seed",
-    "smoke": "bash ./scripts/smoke_test.sh"
+    "smoke": "bash ./scripts/smoke_test.sh",
+    "start": "bun src/index.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.2",
