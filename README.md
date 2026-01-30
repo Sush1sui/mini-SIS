@@ -2,6 +2,7 @@
 
 ![Node](https://img.shields.io/badge/node-%3E%3D16-brightgreen)
 ![Postgres](https://img.shields.io/badge/postgres-%3E%3D13-blue)
+![Bun](https://img.shields.io/badge/bun-required-ffcc00)
 
 A compact School Information System (SIS) monorepo with a Next.js admin frontend and a lightweight Node backend (Hono). Implements authentication, student/course/subject management, reservations, and a grading sheet backed by PostgreSQL.
 
