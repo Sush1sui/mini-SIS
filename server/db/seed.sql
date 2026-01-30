@@ -59,7 +59,36 @@ ON CONFLICT DO NOTHING;
 
 -- Create some grade records for first 10 students and their reserved subjects
 INSERT INTO grades (student_id, subject_id, course_id, prelim, midterm, finals, final_grade, remarks, encoded_by_user_id)
-SELECT sr.student_id, sr.subject_id, st.course_id, (random()*50+50)::numeric(5,2), (random()*50+50)::numeric(5,2), (random()*50+50)::numeric(5,2), NULL, 'seeded', (SELECT id FROM users WHERE email='admin@example.com' LIMIT 1)
+SELECT sr.student_id,
+       sr.subject_id,
+       st.course_id,
+       -- derive pseudo-random integer 1-5 from md5 hash bytes to ensure variety per row
+       ((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-p')),'hex'), 0) % 5) + 1)::int AS prelim,
+       ((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-m')),'hex'), 0) % 5) + 1)::int AS midterm,
+       ((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-f')),'hex'), 0) % 5) + 1)::int AS finals,
+       -- compute final_grade as average of available scores, rounded to 2 decimals
+       round(
+         (
+           (COALESCE(
+              ((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-p')),'hex'), 0) % 5) + 1),0)
+            + COALESCE(((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-m')),'hex'), 0) % 5) + 1),0)
+            + COALESCE(((get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-f')),'hex'), 0) % 5) + 1),0)
+           )::numeric
+           / NULLIF(3, 0)
+         )::numeric,
+       2) AS final_grade,
+       -- compute remarks: final_grade <= 3 => Passed else Failed
+       CASE
+         WHEN round(
+           (
+             ( (get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-p')),'hex'),0) % 5) + 1 )
+             + ( (get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-m')),'hex'),0) % 5) + 1 )
+             + ( (get_byte(decode(md5(concat(sr.student_id::text, '-', sr.subject_id::text, '-f')),'hex'),0) % 5) + 1 )
+           )::numeric / 3.0
+         , 2) <= 3 THEN 'Passed'
+         ELSE 'Failed'
+       END AS remarks,
+       (SELECT id FROM users WHERE email='admin@example.com' LIMIT 1)
 FROM subject_reservations sr
 JOIN students st ON st.id = sr.student_id
 WHERE st.student_no <= 'S0010'

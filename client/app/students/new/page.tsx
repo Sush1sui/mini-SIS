@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import apiFetch from "../../../lib/api";
-import { cropString } from "../../../lib/utils";
 import Protected from "../../../components/Protected";
 import ShadInput from "../../../components/ui/shad/input";
 import ShadButton from "../../../components/ui/shad/button";
@@ -52,49 +51,58 @@ export default function NewStudentForm() {
 
   return (
     <Protected>
-      <ShadCard className="max-w-md">
+      <ShadCard className="max-w-md p-[10px] mt-[32px]">
         <h2 className="text-lg font-semibold mb-4">New student</h2>
         <form onSubmit={handleCreate} className="space-y-4">
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-[var(--muted)]">Student no</label>
             <ShadInput
               value={studentNo}
+              className="py-[5px] px-[7px] mt-[5px]"
               onChange={(e) => setStudentNo(e.target.value)}
               placeholder="S1234"
             />
           </div>
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-[var(--muted)]">First name</label>
             <ShadInput
               value={firstName}
+              className="py-[5px] px-[7px] mt-[5px]"
               onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-[var(--muted)]">Last name</label>
             <ShadInput
               value={lastName}
+              className="py-[5px] px-[7px] mt-[5px]"
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-[var(--muted)]">Course</label>
             <select
-              className="rounded-md border px-3 py-2 w-full bg-transparent border-[var(--card-border)] text-[var(--fg)]"
+              className="rounded-md border px-3 py-2 w-full bg-transparent border-[var(--card-border)] text-[var(--fg)] mt-[5px]"
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
             >
               <option value="">Choose course</option>
               {courses.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {cropString(`${c.code} — ${c.name}`, 48)}
+                  {`${c.code} — ${c.name}`}
                 </option>
               ))}
             </select>
           </div>
-          <ShadButton type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creating..." : "Create student"}
-          </ShadButton>
+          <div className="w-[100%] flex items-center justify-center">
+            <ShadButton
+              type="submit"
+              className="w-[300px] mt-[10px] text-[var(--danger)] cursor-pointer border-none py-[8px] px-[10px]"
+              disabled={loading}
+            >
+              {loading ? "Creating..." : "Create student"}
+            </ShadButton>
+          </div>
         </form>
       </ShadCard>
     </Protected>

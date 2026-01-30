@@ -34,33 +34,41 @@ export default function NewCourse() {
       <div className="max-w-md">
         <h2 className="text-lg font-semibold mb-4">New course</h2>
         <form onSubmit={handleCreate} className="space-y-4">
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-muted">Code</label>
             <Input
               value={code}
               onChange={(e) => setCode(e.target.value)}
+              className="py-[5px] px-[7px] mt-[5px]"
               placeholder="BSCS"
             />
           </div>
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-muted">Name</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="py-[5px] px-[7px] mt-[5px]"
+            />
           </div>
-          <div>
+          <div className="my-[10px]">
             <label className="text-xs text-muted">Description</label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              className="py-[5px] px-[7px] mt-[5px]"
             />
           </div>
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Creating..." : "Create course"}
-          </Button>
+          <div className="w-full flex justify-center items-center mt-[10px]">
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-[300px] mt-[10px] text-[var(--danger)] cursor-pointer border-none py-[8px] px-[10px]"
+              disabled={loading}
+            >
+              {loading ? "Creating..." : "Create course"}
+            </Button>
+          </div>
         </form>
       </div>
     </Protected>

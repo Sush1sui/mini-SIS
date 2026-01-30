@@ -5,6 +5,7 @@ import apiFetch from "../../lib/api";
 import { cropString } from "../../lib/utils";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import Loading from "@/components/loading";
 
 type Course = { id: string; code: string; name: string };
 type Subject = { id: string; code: string; title: string; course_id: string };
@@ -223,50 +224,36 @@ export default function GradesSheetPage() {
 
   return (
     <Protected>
-      <div className="space-y-6">
-        <div className="flex items-center gap-6">
-          <div className="relative">
-            <select
-              className="w-48 max-w-xs rounded-md border-[var(--card-border)] px-3 py-2 bg-transparent text-transparent"
-              value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
-            >
-              <option value="">Select course</option>
-              {courses.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {`${c.code} — ${c.name}`}
-                </option>
-              ))}
-            </select>
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[var(--fg)] text-sm">
-              {courseId
-                ? cropString(`${courses.find((x) => x.id === courseId)?.code || ""} — ${courses.find((x) => x.id === courseId)?.name || ""}`, 48)
-                : "Select course"}
-            </span>
-          </div>
-          <div className="relative">
-            <select
-              className="w-48 max-w-xs rounded-md border-[var(--card-border)] px-3 py-2 bg-transparent text-transparent"
-              value={subjectId}
-              onChange={(e) => setSubjectId(e.target.value)}
-              disabled={!courseId}
-            >
-              <option value="">Select subject</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {`${s.code} — ${s.title}`}
-                </option>
-              ))}
-            </select>
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[var(--fg)] text-sm">
-              {subjectId
-                ? cropString(`${subjects.find((x) => x.id === subjectId)?.code || ""} — ${subjects.find((x) => x.id === subjectId)?.title || ""}`, 48)
-                : "Select subject"}
-            </span>
-          </div>
+      <div className="space-y-6 mt-[16px]">
+        <div className="flex items-center gap-6 z-10 mb-[10px]">
+          <select
+            className="rounded-md border border-[var(--card-border)] px-3 py-2 bg-[var(--card)] text-[var(--fg)] w-[270px] mr-[10px]"
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}
+          >
+            <option value="">Select course</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {cropString(`${c.code} — ${c.name}`, 48)}
+              </option>
+            ))}
+          </select>
+          <select
+            className="rounded-md border border-[var(--card-border)] px-3 py-2 bg-[var(--card)] text-[var(--fg)] w-[250px]"
+            value={subjectId}
+            onChange={(e) => setSubjectId(e.target.value)}
+            disabled={!courseId}
+          >
+            <option value="">Select subject</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {cropString(`${s.code} — ${s.title}`, 48)}
+              </option>
+            ))}
+          </select>
           <div className="ml-auto">
             <Button
-              className="border-0 cursor-pointer"
+              className="border-0 cursor-pointer py-[7px] px-[15px] text-[#ffffff]"
               onClick={saveAll}
               disabled={saving || !subjectId}
               size="sm"
@@ -275,12 +262,13 @@ export default function GradesSheetPage() {
             </Button>
           </div>
         </div>
-
-        {loading ? (
-          <div>Loading grades…</div>
-        ) : (
-          <div>
-            <div className="overflow-x-auto">
+        <div>
+          <div className="overflow-x-auto mt-4 relative z-0 ">
+            {loading ? (
+              <div className="flex items-center justify-center min-h-[50vh]">
+                <Loading message="Loading…" />
+              </div>
+            ) : (
               <table className="w-full table-auto divide-y divide-[var(--card-border)]">
                 <thead>
                   <tr className="text-left text-sm text-muted">
@@ -378,7 +366,7 @@ export default function GradesSheetPage() {
                         </td>
                         <td className="p-3 text-center flex items-center justify-center border-0 cursor-pointer">
                           <Button
-                            className="border-0 cursor-pointer"
+                            className="border-0 cursor-pointer py-[7px] px-[15px] text-[#ffffff]"
                             onClick={() => saveRow(s.id)}
                             disabled={
                               !subjectId ||
@@ -400,9 +388,9 @@ export default function GradesSheetPage() {
                   })}
                 </tbody>
               </table>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </Protected>
   );

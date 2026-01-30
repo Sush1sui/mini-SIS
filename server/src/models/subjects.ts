@@ -51,9 +51,16 @@ export async function createSubject(payload: Partial<Subject>) {
 }
 
 export async function updateSubject(id: string, payload: Partial<Subject>) {
+  // Get existing row so we don't overwrite non-provided fields with undefined
+  const existing = await getSubject(id);
+  if (!existing) return undefined as any;
+  const course_id = payload.course_id ?? existing.course_id;
+  const code = payload.code ?? existing.code;
+  const title = payload.title ?? existing.title;
+  const units = payload.units ?? existing.units ?? 0;
   const res = await query(
     `UPDATE subjects SET course_id=$1, code=$2, title=$3, units=$4, updated_at=now() WHERE id=$5 RETURNING *`,
-    [payload.course_id, payload.code, payload.title, payload.units || 0, id],
+    [course_id, code, title, units, id],
   );
   return res.rows[0] as Subject;
 }

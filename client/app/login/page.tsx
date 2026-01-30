@@ -22,7 +22,11 @@ export default function LoginPage() {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
+      // notify other client components to refresh auth state
+      if (typeof window !== "undefined")
+        window.dispatchEvent(new Event("auth"));
       router.push("/students");
+      router.refresh();
     } catch (err: any) {
       setError(err?.message || "Login failed");
     } finally {
@@ -31,8 +35,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center">
-      <div className="w-full max-w-md px-6">
+    <div className="flex min-h-screen items-center justify-center p-8">
+      <div className="w-full min-w-[340px] max-w-[540px] px-6">
         <ShadCard className="glass-card">
           <div className="text-center mb-4">
             <div className="login-avatar">
@@ -62,36 +66,40 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div className="my-[12px]">
               <label className="text-xs text-[var(--muted)]">Email</label>
               <div className="mt-1">
                 <ShadInput
                   value={email}
+                  className="py-[5px] px-[7px]"
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@example.com"
                 />
               </div>
             </div>
 
-            <div>
+            <div className="my-[12px]">
               <label className="text-xs text-[var(--muted)]">Password</label>
               <div className="mt-1">
                 <ShadInput
                   type="password"
                   value={password}
+                  className="py-[5px] px-[7px]"
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            {error && <div className="text-sm text-red-500">{error}</div>}
+            {error && (
+              <div className="text-sm text-red-500 my-[12px]">{error}</div>
+            )}
 
-            <div>
+            <div className="mt-[20px]">
               <ShadButton
                 type="submit"
-                size="lg"
-                className="login-cta"
+                size="md"
+                className="login-cta border-none cursor-pointer text-[var(--danger)] h-[30px]"
                 disabled={loading}
               >
                 {loading ? "Signing in..." : "Sign in"}

@@ -6,6 +6,8 @@ import { Card } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import Protected from "../../../components/Protected";
+import Loading from "@/components/loading";
+import Link from "next/link";
 
 export default function CourseManagePage() {
   const pathname = usePathname();
@@ -60,44 +62,87 @@ export default function CourseManagePage() {
     }
   }
 
-  if (loading) return <div>Loading…</div>;
+  async function deleteSubject(idToDelete: string) {
+    if (!confirm("Delete this subject? This cannot be undone.")) return;
+    try {
+      await apiFetch(`/subjects/${idToDelete}`, { method: "DELETE" });
+      setSubjects((prev) => prev.filter((s) => s.id !== idToDelete));
+    } catch (e: any) {
+      alert(e?.message || "Could not delete subject");
+    }
+  }
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loading message="Loading…" />
+      </div>
+    );
   if (!course) return <div>Course not found</div>;
 
   return (
     <Protected>
-      <div className="space-y-6">
-        <Card>
+      <div className="space-y-6 mt-[20px]">
+        <Card className="my-[20px]">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="px-[10px]">
               <h3 className="text-lg font-semibold">
                 {course.code} — {course.name}
               </h3>
-              <div className="text-sm text-muted">{course.description}</div>
+              <div className="text-sm text-muted mb-[10px]">
+                {course.description}
+              </div>
             </div>
           </div>
         </Card>
 
-        <Card>
-          <h4 className="mb-3 font-medium">Add subject</h4>
+        <Card className="my-[20px] px-[10px] pb-[10px]">
+          <h4 className="font-medium">Add subject</h4>
           <form onSubmit={addSubject} className="space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              <Input
-                placeholder="code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <Input
-                placeholder="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <Input
-                placeholder="units"
-                value={units}
-                onChange={(e) => setUnits(e.target.value)}
-              />
+            <div className="flex flex-col gap-3">
+              <div className="w-full flex flex-col my-[10px]">
+                <label className="text-xs text-muted">Code</label>
+                <Input
+                  placeholder="code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="py-[5px] px-[7px]"
+                  style={{
+                    width: "100px",
+                  }}
+                />
+              </div>
+              <div className="w-full flex flex-col my-[10px]">
+                <label className="text-xs text-muted">Title</label>
+                <Input
+                  placeholder="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="py-[5px] px-[7px]"
+                  style={{
+                    width: "200px",
+                  }}
+                />
+              </div>
+              <div className="w-full flex flex-col my-[10px]">
+                <label className="text-xs text-muted">Units</label>
+                <Input
+                  placeholder="units"
+                  value={units}
+                  onChange={(e) => setUnits(e.target.value)}
+                  className="py-[5px] px-[7px]"
+                  style={{
+                    width: "100px",
+                  }}
+                />
+              </div>
             </div>
-            <Button type="submit">Create subject</Button>
+            <Button
+              className="border-0 cursor-pointer py-[7px] px-[15px] text-[#ffffff] mt-[10px]"
+              type="submit"
+            >
+              Create subject
+            </Button>
           </form>
         </Card>
 
@@ -105,12 +150,29 @@ export default function CourseManagePage() {
           <h4 className="mb-3 font-medium">Subjects</h4>
           <div className="grid gap-3">
             {subjects.map((s) => (
-              <Card key={s.id} className="flex items-center justify-between">
+              <Card
+                key={s.id}
+                className="flex items-center justify-between px-[10px] py-[8px] my-[5px]"
+              >
                 <div>
                   <div className="text-sm font-medium">
                     {s.code} — {s.title}
                   </div>
                   <div className="text-xs text-muted">Units: {s.units}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/courses/${course.id}/${s.id}`}
+                    className="text-sm text-muted hover:underline"
+                  >
+                    Manage
+                  </Link>
+                  <Button
+                    onClick={() => deleteSubject(s.id)}
+                    className="text-sm text-[var(--danger)] border-0 cursor-pointer px-[10px] py-[5px] ml-[10px]"
+                  >
+                    Delete
+                  </Button>
                 </div>
               </Card>
             ))}

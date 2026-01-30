@@ -45,36 +45,40 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold">Dashboard</h1>
           <div className="flex items-center gap-3">
             <Link href="/students/new">
-              <ShadButton>New Student</ShadButton>
+              <ShadButton className="border-none cursor-pointer text-[#ffffff] h-[25px] px-[10px] mr-[10px]">
+                New Student
+              </ShadButton>
             </Link>
             <Link href="/courses/new">
-              <ShadButton variant="outline">New Course</ShadButton>
+              <ShadButton className="border-none cursor-pointer text-[#ffffff] h-[25px] px-[10px]">
+                New Course
+              </ShadButton>
             </Link>
           </div>
         </header>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <ShadCard className="p-4">
+          <ShadCard className="py-[5px] px-[10px]">
             <div className="text-sm text-muted">Total Students</div>
             <div className="mt-2 text-2xl font-bold">
               {loading ? "—" : studentsTotal}
             </div>
           </ShadCard>
-          <ShadCard className="p-4">
+          <ShadCard className="py-[5px] px-[10px]">
             <div className="text-sm text-muted">Courses</div>
             <div className="mt-2 text-2xl font-bold">
               {loading ? "—" : courses.length}
             </div>
           </ShadCard>
-          <ShadCard className="p-4">
+          {/* <ShadCard className="py-[5px] px-[10px]">
             <div className="text-sm text-muted">Recent Activity</div>
             <div className="mt-2 text-2xl font-bold">{loading ? "—" : "—"}</div>
-          </ShadCard>
+          </ShadCard> */}
         </section>
 
         <section className="mt-8">
           <h2 className="mb-3 text-lg font-medium">Recent Students</h2>
-          <div className="overflow-hidden rounded border">
+          <div className="overflow-hidden rounded border-[var(--card-border)] border bg-[var(--card-bg)] shadow-sm px-[10px] py-[5px]">
             <table className="w-full table-fixed text-sm">
               <thead className="bg-surface text-left">
                 <tr>
