@@ -63,4 +63,31 @@ const port = Number(process.env.PORT) || 4000;
 console.log(`Starting Mini SIS server on port ${port}`);
 serve({ fetch: app.fetch, port });
 
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+let isPinging = false;
+const SERVER_LINK = process.env.SERVER_LINK;
+
+async function attemptPing() {
+  if (!SERVER_LINK || isPinging) return;
+  isPinging = true;
+  try {
+    const res = await fetch(SERVER_LINK, { method: "GET" });
+    console.log(`Ping successful (${res.status})`);
+    if (retryTimer) {
+      clearTimeout(retryTimer);
+      retryTimer = null;
+    }
+  } catch (err) {
+    console.log(`Ping failed, scheduling retry: ${err}`);
+    if (retryTimer) clearTimeout(retryTimer);
+    retryTimer = setTimeout(() => void attemptPing(), 5000);
+  } finally {
+    isPinging = false;
+  }
+}
+
+// Run immediate first check, then every 10 minutes
+void attemptPing();
+setInterval(() => void attemptPing(), 10 * 60 * 1000);
+
 export default app;
